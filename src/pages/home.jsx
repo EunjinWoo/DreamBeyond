@@ -27,8 +27,15 @@ function Home() {
 
     const controls = new OrbitControls(camera, renderer.domElement);
 
-    const axes = new THREE.AxesHelper(150);
-    scene.add(axes);
+    const model = new THREE.Object3D();
+
+    {
+      const axes = new THREE.AxesHelper(150);
+      scene.add(axes);
+
+      const gridHelper = new THREE.GridHelper(70, 20);
+      scene.add(gridHelper);
+    }
 
     // 조명
     const light1 = new THREE.HemisphereLight(0xffffff, 0x080820, 1);
@@ -50,7 +57,17 @@ function Home() {
       CloudAndChar,
       function (gltf) {
         console.log("Cloud and Character Model : ", gltf);
-        scene.add(gltf.scene);
+        const object = gltf.scene;
+
+        //크기 조절
+        const scaleNum = 2;
+        object.children[0].scale.set(scaleNum, scaleNum, scaleNum);
+
+        model.add(object.children[0]);
+        console.log("model added :", model);
+        model.rotation.set(0, -5, 0);
+
+        scene.add(model);
       },
       undefined,
       function (error) {
@@ -58,12 +75,8 @@ function Home() {
       }
     );
 
-    const clock = new THREE.Clock();
-
     const animate = () => {
-      const delta = clock.getDelta();
-
-      mixers.forEach((mixer) => mixer.update(delta));
+      model.rotation.y += 0.0005;
 
       renderer.render(scene, camera);
       requestAnimationFrame(animate);

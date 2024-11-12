@@ -14,7 +14,8 @@ function Home() {
     let HEIGHT = window.innerHeight;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color("#fff");
+    // scene.background = new THREE.Color("#E0EAFF");
+    scene.background = new THREE.Color("#C5D4F4");
 
     const camera = new THREE.PerspectiveCamera(70, WIDTH / HEIGHT, 0.1, 2000);
     camera.position.set(50, 50, 100);
@@ -37,18 +38,133 @@ function Home() {
       scene.add(gridHelper);
     }
 
+    scene.fog = new THREE.Fog(0x000000, 10, 1000);
+
     // 조명
-    const light1 = new THREE.HemisphereLight(0xffffff, 0x080820, 1);
-    light1.position.set(300, 300, 300);
-    scene.add(light1);
+    {
+      // ambient light
+      const ambient_light = new THREE.AmbientLight(0xefedff, 0.7);
+      scene.add(ambient_light);
 
-    const light2 = new THREE.PointLight(0xffffff, 0.6);
-    light2.position.set(40, 120, 40);
-    light2.castShadow = true;
-    scene.add(light2);
+      // directional light 1
+      const directional_light = new THREE.DirectionalLight(0xefedff, 1.5);
+      directional_light.castShadow = true;
+      scene.add(directional_light);
 
-    const pointLightHelper = new THREE.PointLightHelper(light2, 10);
-    scene.add(pointLightHelper);
+      // directional light 2
+      const directional_light_2 = new THREE.DirectionalLight(0x7d6bff, 0.6);
+      directional_light_2.castShadow = true;
+      directional_light_2.position.set(50, 50, 50);
+      scene.add(directional_light_2);
+
+      const directionalLightHelper2 = new THREE.DirectionalLightHelper(
+        directional_light_2,
+        5,
+        "#000"
+      );
+      scene.add(directionalLightHelper2);
+
+      // directional light 3
+      const directional_light_3 = new THREE.DirectionalLight(0x7d6bff, 0.6);
+      directional_light_3.castShadow = true;
+      directional_light_3.position.set(50, 50, 50);
+      scene.add(directional_light_3);
+
+      const directionalLightHelper3 = new THREE.DirectionalLightHelper(
+        directional_light_3,
+        5,
+        "#000"
+      );
+      scene.add(directionalLightHelper3);
+
+      // directional light 4
+      const directional_light_4 = new THREE.DirectionalLight(0xefedff, 2);
+      directional_light_4.castShadow = true;
+      directional_light_4.position.set(-50, 50, -50);
+      scene.add(directional_light_4);
+
+      const directionalLightHelper4 = new THREE.DirectionalLightHelper(
+        directional_light_4,
+        5,
+        "#000"
+      );
+      scene.add(directionalLightHelper4);
+
+      // directional light 5 - below object
+      const directional_light_5 = new THREE.DirectionalLight(0x7d6bff, 1);
+      directional_light_5.castShadow = true;
+      directional_light_5.position.set(-50, -50, -50);
+      scene.add(directional_light_5);
+
+      const directionalLightHelper5 = new THREE.DirectionalLightHelper(
+        directional_light_5,
+        5,
+        "#000"
+      );
+      scene.add(directionalLightHelper5);
+
+      // directional light 6 - to mini clouds
+      const directional_light_6 = new THREE.DirectionalLight(0xefedff, 0.6);
+      directional_light_6.castShadow = true;
+      directional_light_6.position.set(50, 50, 50);
+      directional_light_6.target.position.set(-30, 30, 30);
+      scene.add(directional_light_6);
+      scene.add(directional_light_6.target);
+
+      const directionalLightHelper6 = new THREE.DirectionalLightHelper(
+        directional_light_6,
+        5,
+        "#000"
+      );
+      scene.add(directionalLightHelper6);
+
+      // directional light 7 - below object
+      const directional_light_7 = new THREE.DirectionalLight(0xe5e2ff, 1);
+      directional_light_7.castShadow = true;
+      directional_light_7.position.set(-50, -50, 50);
+      scene.add(directional_light_7);
+
+      const directionalLightHelper7 = new THREE.DirectionalLightHelper(
+        directional_light_7,
+        5,
+        "#000"
+      );
+      scene.add(directionalLightHelper7);
+
+      // directional light 8 - below object
+      const directional_light_8 = new THREE.DirectionalLight(0xe5e2ff, 1);
+      directional_light_8.castShadow = true;
+      directional_light_8.position.set(50, -50, -50);
+      scene.add(directional_light_8);
+
+      const directionalLightHelper8 = new THREE.DirectionalLightHelper(
+        directional_light_8,
+        5,
+        "#000"
+      );
+      scene.add(directionalLightHelper8);
+
+      // directional light 9 - below object
+      const directional_light_9 = new THREE.DirectionalLight(0xe5e2ff, 1);
+      directional_light_9.castShadow = true;
+      directional_light_9.position.set(50, -50, 50);
+      scene.add(directional_light_9);
+
+      const directionalLightHelper9 = new THREE.DirectionalLightHelper(
+        directional_light_9,
+        5,
+        "#000"
+      );
+      scene.add(directionalLightHelper9);
+    }
+
+    // 안개
+    // {
+    //   const near = 100;
+    //   const far = 1000;
+    //   const color = "#000000";
+    //   scene.fog = new THREE.Fog(0x000000, 100, 1000);
+    // }
 
     // GLTF 모델 로드
     const gltfloader = new GLTFLoader();
@@ -57,13 +173,17 @@ function Home() {
       CloudAndChar,
       function (gltf) {
         console.log("Cloud and Character Model : ", gltf);
-        const object = gltf.scene;
+        const object = gltf.scene.children[0];
 
-        //크기 조절
+        //크기 / 위치 조절
         const scaleNum = 2;
-        object.children[0].scale.set(scaleNum, scaleNum, scaleNum);
+        object.scale.set(scaleNum, scaleNum, scaleNum);
+        object.position.set(15, 7, 0);
 
-        model.add(object.children[0]);
+        // 그림자 생기도록
+        object.recieveShadow = true;
+
+        model.add(object);
         console.log("model added :", model);
         model.rotation.set(0, -5, 0);
 

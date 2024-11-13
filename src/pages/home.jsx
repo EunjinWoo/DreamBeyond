@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import CloudAndChar from "../assets/MacMiler_noPiano.glb";
+import DreamBeyondModel from "../assets/dream-beyond-object.glb";
 
 function Home() {
   const mountRef = useRef(null);
@@ -14,11 +14,10 @@ function Home() {
     let HEIGHT = window.innerHeight;
 
     const scene = new THREE.Scene();
-    // scene.background = new THREE.Color("#E0EAFF");
-    scene.background = new THREE.Color("#C5D4F4");
+    scene.background = new THREE.Color("#000000");
 
     const camera = new THREE.PerspectiveCamera(70, WIDTH / HEIGHT, 0.1, 2000);
-    camera.position.set(50, 50, 100);
+    camera.position.set(50, 30, 100);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(WIDTH, HEIGHT);
@@ -43,16 +42,16 @@ function Home() {
     // 조명
     {
       // ambient light
-      const ambient_light = new THREE.AmbientLight(0xefedff, 0.7);
+      const ambient_light = new THREE.AmbientLight(0xf6f5ff, 0.7);
       scene.add(ambient_light);
 
       // directional light 1
-      const directional_light = new THREE.DirectionalLight(0xefedff, 1.5);
+      const directional_light = new THREE.DirectionalLight(0xf6f5ff, 1.5);
       directional_light.castShadow = true;
       scene.add(directional_light);
 
       // directional light 2
-      const directional_light_2 = new THREE.DirectionalLight(0x7d6bff, 0.6);
+      const directional_light_2 = new THREE.DirectionalLight(0xefedff, 0.6);
       directional_light_2.castShadow = true;
       directional_light_2.position.set(50, 50, 50);
       scene.add(directional_light_2);
@@ -65,7 +64,7 @@ function Home() {
       scene.add(directionalLightHelper2);
 
       // directional light 3
-      const directional_light_3 = new THREE.DirectionalLight(0x7d6bff, 0.6);
+      const directional_light_3 = new THREE.DirectionalLight(0xefedff, 0.6);
       directional_light_3.castShadow = true;
       directional_light_3.position.set(50, 50, 50);
       scene.add(directional_light_3);
@@ -91,7 +90,7 @@ function Home() {
       scene.add(directionalLightHelper4);
 
       // directional light 5 - below object
-      const directional_light_5 = new THREE.DirectionalLight(0x7d6bff, 1);
+      const directional_light_5 = new THREE.DirectionalLight(0xefedff, 1);
       directional_light_5.castShadow = true;
       directional_light_5.position.set(-50, -50, -50);
       scene.add(directional_light_5);
@@ -117,73 +116,33 @@ function Home() {
         "#000"
       );
       scene.add(directionalLightHelper6);
-
-      // directional light 7 - below object
-      const directional_light_7 = new THREE.DirectionalLight(0xe5e2ff, 1);
-      directional_light_7.castShadow = true;
-      directional_light_7.position.set(-50, -50, 50);
-      scene.add(directional_light_7);
-
-      const directionalLightHelper7 = new THREE.DirectionalLightHelper(
-        directional_light_7,
-        5,
-        "#000"
-      );
-      scene.add(directionalLightHelper7);
-
-      // directional light 8 - below object
-      const directional_light_8 = new THREE.DirectionalLight(0xe5e2ff, 1);
-      directional_light_8.castShadow = true;
-      directional_light_8.position.set(50, -50, -50);
-      scene.add(directional_light_8);
-
-      const directionalLightHelper8 = new THREE.DirectionalLightHelper(
-        directional_light_8,
-        5,
-        "#000"
-      );
-      scene.add(directionalLightHelper8);
-
-      // directional light 9 - below object
-      const directional_light_9 = new THREE.DirectionalLight(0xe5e2ff, 1);
-      directional_light_9.castShadow = true;
-      directional_light_9.position.set(50, -50, 50);
-      scene.add(directional_light_9);
-
-      const directionalLightHelper9 = new THREE.DirectionalLightHelper(
-        directional_light_9,
-        5,
-        "#000"
-      );
-      scene.add(directionalLightHelper9);
     }
-
-    // 안개
-    // {
-    //   const near = 100;
-    //   const far = 1000;
-    //   const color = "#000000";
-    //   scene.fog = new THREE.Fog(0x000000, 100, 1000);
-    // }
 
     // GLTF 모델 로드
     const gltfloader = new GLTFLoader();
 
     gltfloader.load(
-      CloudAndChar,
+      DreamBeyondModel,
       function (gltf) {
-        console.log("Cloud and Character Model : ", gltf);
-        const object = gltf.scene.children[0];
+        console.log("Cloud and Character Model : ", gltf.scene.children[1]);
+        const background = gltf.scene.children[0];
+        const object = gltf.scene.children[1];
 
         //크기 / 위치 조절
-        const scaleNum = 2;
-        object.scale.set(scaleNum, scaleNum, scaleNum);
-        object.position.set(15, 7, 0);
+        const objectScale = 55;
+        object.scale.set(objectScale, objectScale, objectScale);
+        object.position.set(7, 7, 0);
+
+        const backgroundScale = 13;
+        background.scale.set(backgroundScale, backgroundScale, backgroundScale);
+        background.position.set(-30, 0, 0);
+        background.rotation.set(0, 0, 45);
 
         // 그림자 생기도록
         object.recieveShadow = true;
 
         model.add(object);
+        model.add(background);
         console.log("model added :", model);
         model.rotation.set(0, -5, 0);
 
@@ -194,6 +153,32 @@ function Home() {
         console.error(error);
       }
     );
+
+    // gltfloader.load(
+    //   SpaceBackground,
+    //   function (gltf) {
+    //     console.log("Space Model : ", gltf);
+    //     const object = gltf.scene.children[0];
+
+    //     //크기 / 위치 조절
+    //     const scaleNum = 17.5;
+    //     object.scale.set(scaleNum, scaleNum, scaleNum);
+    //     object.position.set(15, 7, 0);
+
+    //     // 그림자 생기도록
+    //     // object.recieveShadow = true;
+
+    //     model.add(object);
+    //     console.log("model added :", model);
+    //     // model.rotation.set(0, -5, 0);
+
+    //     scene.add(model);
+    //   },
+    //   undefined,
+    //   function (error) {
+    //     console.error(error);
+    //   }
+    // );
 
     const animate = () => {
       model.rotation.y += 0.0005;

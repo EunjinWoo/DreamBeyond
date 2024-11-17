@@ -27,6 +27,8 @@ function Home() {
 
     const controls = new OrbitControls(camera, renderer.domElement);
 
+    const modelCharacter = new THREE.Object3D();
+    const modelBackground = new THREE.Object3D();
     const model = new THREE.Object3D();
 
     {
@@ -141,12 +143,13 @@ function Home() {
         // 그림자 생기도록
         object.recieveShadow = true;
 
-        model.add(object);
-        model.add(background);
+        modelCharacter.add(object);
+        modelBackground.add(background);
         console.log("model added :", model);
-        model.rotation.set(0, -5, 0);
+        model.rotation.set(0, 5, 0);
 
-        scene.add(model);
+        scene.add(modelCharacter);
+        scene.add(modelBackground);
       },
       undefined,
       function (error) {
@@ -154,34 +157,9 @@ function Home() {
       }
     );
 
-    // gltfloader.load(
-    //   SpaceBackground,
-    //   function (gltf) {
-    //     console.log("Space Model : ", gltf);
-    //     const object = gltf.scene.children[0];
-
-    //     //크기 / 위치 조절
-    //     const scaleNum = 17.5;
-    //     object.scale.set(scaleNum, scaleNum, scaleNum);
-    //     object.position.set(15, 7, 0);
-
-    //     // 그림자 생기도록
-    //     // object.recieveShadow = true;
-
-    //     model.add(object);
-    //     console.log("model added :", model);
-    //     // model.rotation.set(0, -5, 0);
-
-    //     scene.add(model);
-    //   },
-    //   undefined,
-    //   function (error) {
-    //     console.error(error);
-    //   }
-    // );
-
     const animate = () => {
-      model.rotation.y += 0.0005;
+      modelCharacter.rotation.y += 0.0008;
+      modelBackground.rotation.y += 0.0001;
 
       renderer.render(scene, camera);
       requestAnimationFrame(animate);

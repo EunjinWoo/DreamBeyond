@@ -125,6 +125,7 @@ function Home() {
 
     // GLTF 모델 로드
     const gltfloader = new GLTFLoader();
+    let isRotating = true;
 
     gltfloader.load(
       DreamBeyondModel,
@@ -161,8 +162,10 @@ function Home() {
     );
 
     const animate = () => {
-      modelCharacter.rotation.y += 0.0008;
-      modelBackground.rotation.y += 0.0001;
+      if (isRotating) {
+        modelCharacter.rotation.y += 0.0008;
+        modelBackground.rotation.y += 0.0001;
+      }
 
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
@@ -173,7 +176,13 @@ function Home() {
       scene,
       renderer,
       modelCharacter,
-      initialCameraPosition
+      initialCameraPosition,
+      () => {
+        isRotating = false; // 모델 클릭 시 회전 멈춤
+      },
+      () => {
+        isRotating = true; // 모델 외부 클릭 시 회전 재개
+      }
     );
 
     const handleResize = () => {

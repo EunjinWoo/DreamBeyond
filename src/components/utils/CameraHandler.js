@@ -5,7 +5,9 @@ export function setupCameraInteraction(
   scene,
   renderer,
   targetModel,
-  initialCameraPosition
+  initialCameraPosition,
+  onModelClick,
+  onOutsideClick
 ) {
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
@@ -32,10 +34,14 @@ export function setupCameraInteraction(
 
       camera.position.copy(newPosition);
       camera.lookAt(intersects[0].object.position);
+
+      onModelClick(); // 회전 멈춤
     } else {
       // 모델 외부 클릭 시: 원래 위치로 돌아가기
       camera.position.copy(originalPosition);
       camera.lookAt(originalLookAt);
+
+      onOutsideClick(); // 회전 재개
     }
   };
 

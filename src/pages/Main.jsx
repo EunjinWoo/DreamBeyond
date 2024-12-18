@@ -1,11 +1,15 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { setupCameraInteraction } from "../components/utils/CameraHandler";
+import ScrollablePage from "./ScrollablePage";
 
-function Home() {
+function Home({ iframeContainerRef }) {
   const mountRef = useRef(null);
+  const [showScrollablePage, setShowScrollablePage] = useState(false);
+  const [pagePosition, setPagePosition] = useState({ x: 0, y: 0 });
+
   // 환경 변수에서 Blob URL 가져오기
   const DreamBeyondModel =
     "https://dreambeyondbucket.s3.ap-northeast-2.amazonaws.com/dream-beyond-object.glb";
@@ -30,6 +34,7 @@ function Home() {
     mountRef.current.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableZoom = false; // 확대/축소 비활성화
 
     const modelCharacter = new THREE.Object3D();
     const modelBackground = new THREE.Object3D();
@@ -180,10 +185,17 @@ function Home() {
       initialCameraPosition,
       () => {
         isRotating = false; // 모델 클릭 시 회전 멈춤
+        setShowScrollablePage(true); // ScrollablePage 표시
+        setPagePosition({
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+        }); // 중앙 위치
       },
       () => {
         isRotating = true; // 모델 외부 클릭 시 회전 재개
-      }
+        setShowScrollablePage(false); // ScrollablePage 숨김
+      },
+      iframeContainerRef
     );
 
     const handleResize = () => {
@@ -207,7 +219,23 @@ function Home() {
     };
   }, []);
 
-  return <div ref={mountRef} style={{ width: "100vw", height: "100vh" }} />;
+  return (
+    <>
+      <div ref={mountRef} style={{ width: "100vw", height: "100vh" }} />
+      {showScrollablePage && (
+        <div
+          style={{
+            position: "absolute",
+            left: `${pagePosition.x - 200}px`,
+            top: `${pagePosition.y - 150}px`,
+            zIndex: 1000,
+          }}
+        >
+          <ScrollablePage />
+        </div>
+      )}
+    </>
+  );
 }
 
 export default Home;

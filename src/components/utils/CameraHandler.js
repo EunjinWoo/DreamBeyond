@@ -1,5 +1,14 @@
 import * as THREE from "three";
 
+export function convertToScreenPosition(camera, position, renderer) {
+  const vector = position.clone().project(camera);
+
+  const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+  const y = -(vector.y * 0.5 - 0.5) * window.innerHeight;
+
+  return { x, y };
+}
+
 export function setupCameraInteraction(
   camera,
   scene,
@@ -7,7 +16,8 @@ export function setupCameraInteraction(
   targetModel,
   initialCameraPosition,
   onModelClick,
-  onOutsideClick
+  onOutsideClick,
+  iframeContainerRef
 ) {
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
@@ -32,10 +42,12 @@ export function setupCameraInteraction(
 
       const newPosition = new THREE.Vector3();
       newPosition.copy(intersects[0].object.position);
-      newPosition.add(new THREE.Vector3(0, 0, -50)); // 뒤쪽 위치로 이동
+      newPosition.add(new THREE.Vector3(-11, 15, 0.5)); // 뒤쪽 위치로 이동
 
       camera.position.copy(newPosition);
-      camera.lookAt(intersects[0].object.position);
+
+      const notebookScreen = new THREE.Vector3(-13, 15, 0.65); // 원하는 좌표로 설정 (예: y축으로 조금 위로)
+      camera.lookAt(notebookScreen);
 
       onModelClick(); // 회전 멈춤
     } else {

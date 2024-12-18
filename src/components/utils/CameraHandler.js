@@ -28,6 +28,8 @@ export function setupCameraInteraction(
 
     if (intersects.length > 0) {
       // 모델이 클릭된 경우: 모델 뒤로 이동
+      targetModel.rotation.set(0, 0, 0); // 모델 회전 초기화
+
       const newPosition = new THREE.Vector3();
       newPosition.copy(intersects[0].object.position);
       newPosition.add(new THREE.Vector3(0, 0, -50)); // 뒤쪽 위치로 이동

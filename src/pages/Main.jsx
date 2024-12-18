@@ -7,7 +7,8 @@ import { setupCameraInteraction } from "../components/utils/CameraHandler";
 function Home() {
   const mountRef = useRef(null);
   // 환경 변수에서 Blob URL 가져오기
-  const DreamBeyondModel = process.env.REACT_APP_MODEL_URL;
+  const DreamBeyondModel =
+    "https://dreambeyondbucket.s3.ap-northeast-2.amazonaws.com/dream-beyond-object.glb";
   const mixers = [];
   let action;
 

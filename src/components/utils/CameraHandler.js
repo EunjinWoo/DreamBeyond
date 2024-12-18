@@ -1,14 +1,5 @@
 import * as THREE from "three";
 
-export function convertToScreenPosition(camera, position, renderer) {
-  const vector = position.clone().project(camera);
-
-  const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
-  const y = -(vector.y * 0.5 - 0.5) * window.innerHeight;
-
-  return { x, y };
-}
-
 export function setupCameraInteraction(
   camera,
   scene,
@@ -16,8 +7,7 @@ export function setupCameraInteraction(
   targetModel,
   initialCameraPosition,
   onModelClick,
-  onOutsideClick,
-  iframeContainerRef
+  onOutsideClick
 ) {
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();

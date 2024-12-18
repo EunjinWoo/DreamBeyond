@@ -5,14 +5,14 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { setupCameraInteraction } from "../components/utils/CameraHandler";
 import ScrollablePage from "./ScrollablePage";
 
-function Home({ iframeContainerRef }) {
+function Home() {
   const mountRef = useRef(null);
-  const [showScrollablePage, setShowScrollablePage] = useState(false);
-  const [pagePosition, setPagePosition] = useState({ x: 0, y: 0 });
 
   // 환경 변수에서 Blob URL 가져오기
+  // const DreamBeyondModel =
+  //   "https://dreambeyondbucket.s3.ap-northeast-2.amazonaws.com/dream-beyond-object.glb";
   const DreamBeyondModel =
-    "https://dreambeyondbucket.s3.ap-northeast-2.amazonaws.com/dream-beyond-object.glb";
+    "https://dreambeyondbucket.s3.ap-northeast-2.amazonaws.com/dream-beyond-object-portfoliopng.glb";
   const mixers = [];
   let action;
 
@@ -132,6 +132,7 @@ function Home({ iframeContainerRef }) {
     // GLTF 모델 로드
     const gltfloader = new GLTFLoader();
     let isRotating = true;
+    let laptopScreen = null;
 
     gltfloader.load(
       DreamBeyondModel,
@@ -139,6 +140,14 @@ function Home({ iframeContainerRef }) {
         console.log("Cloud and Character Model : ", gltf.scene.children[1]);
         const background = gltf.scene.children[0];
         const object = gltf.scene.children[1];
+        const laptop = gltf.scene.children[1].children[8].children[0];
+
+        laptop.traverse((child) => {
+          if (child.name === "obRdEiGZsRMTwyW") {
+            laptopScreen = child;
+          }
+        });
+        console.log("Laptop Screen Object:", laptopScreen); // 객체 확인
 
         // 크기 / 위치 조절
         const objectScale = 55;
@@ -185,17 +194,10 @@ function Home({ iframeContainerRef }) {
       initialCameraPosition,
       () => {
         isRotating = false; // 모델 클릭 시 회전 멈춤
-        setShowScrollablePage(true); // ScrollablePage 표시
-        setPagePosition({
-          x: window.innerWidth / 2,
-          y: window.innerHeight / 2,
-        }); // 중앙 위치
       },
       () => {
         isRotating = true; // 모델 외부 클릭 시 회전 재개
-        setShowScrollablePage(false); // ScrollablePage 숨김
-      },
-      iframeContainerRef
+      }
     );
 
     const handleResize = () => {
@@ -219,23 +221,7 @@ function Home({ iframeContainerRef }) {
     };
   }, []);
 
-  return (
-    <>
-      <div ref={mountRef} style={{ width: "100vw", height: "100vh" }} />
-      {showScrollablePage && (
-        <div
-          style={{
-            position: "absolute",
-            left: `${pagePosition.x - 200}px`,
-            top: `${pagePosition.y - 150}px`,
-            zIndex: 1000,
-          }}
-        >
-          <ScrollablePage />
-        </div>
-      )}
-    </>
-  );
+  return <div ref={mountRef} style={{ width: "100vw", height: "100vh" }} />;
 }
 
 export default Home;

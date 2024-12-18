@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-// import DreamBeyondModel from "../assets/dream-beyond-object.glb";
+import { setupCameraInteraction } from "../components/utils/CameraHandler";
 
 function Home() {
   const mountRef = useRef(null);
@@ -18,8 +18,9 @@ function Home() {
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#000000");
 
+    const initialCameraPosition = [50, 30, 100]; // 초기 카메라 위치
     const camera = new THREE.PerspectiveCamera(70, WIDTH / HEIGHT, 0.1, 2000);
-    camera.position.set(50, 30, 100);
+    camera.position.set(...initialCameraPosition);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(WIDTH, HEIGHT);
@@ -132,7 +133,7 @@ function Home() {
         const background = gltf.scene.children[0];
         const object = gltf.scene.children[1];
 
-        //크기 / 위치 조절
+        // 크기 / 위치 조절
         const objectScale = 55;
         object.scale.set(objectScale, objectScale, objectScale);
         object.position.set(7, 7, 0);
@@ -167,6 +168,14 @@ function Home() {
       requestAnimationFrame(animate);
     };
 
+    const cleanupCameraHandler = setupCameraInteraction(
+      camera,
+      scene,
+      renderer,
+      modelCharacter,
+      initialCameraPosition
+    );
+
     const handleResize = () => {
       WIDTH = window.innerWidth;
       HEIGHT = window.innerHeight;
@@ -183,6 +192,7 @@ function Home() {
     return () => {
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("keydown", (event) => {});
+      cleanupCameraHandler();
       mountRef.current.removeChild(renderer.domElement);
     };
   }, []);

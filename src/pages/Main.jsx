@@ -2,10 +2,12 @@ import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import DreamBeyondModel from "../assets/dream-beyond-object.glb";
+// import DreamBeyondModel from "../assets/dream-beyond-object.glb";
 
 function Home() {
   const mountRef = useRef(null);
+  // 환경 변수에서 Blob URL 가져오기
+  const DreamBeyondModel = process.env.REACT_APP_MODEL_URL;
   const mixers = [];
   let action;
 

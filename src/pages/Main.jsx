@@ -42,13 +42,13 @@ function Home() {
     const modelLaptopScreen = new THREE.Mesh();
     const mainObjectGroup = new THREE.Group();
 
-    {
-      const axes = new THREE.AxesHelper(150);
-      scene.add(axes);
+    // {
+    //   const axes = new THREE.AxesHelper(150);
+    //   scene.add(axes);
 
-      const gridHelper = new THREE.GridHelper(70, 20);
-      scene.add(gridHelper);
-    }
+    //   const gridHelper = new THREE.GridHelper(70, 20);
+    //   scene.add(gridHelper);
+    // }
 
     scene.fog = new THREE.Fog(0x000000, 10, 1000);
 
@@ -254,7 +254,10 @@ function Home() {
     <>
       {isLoading && <LoadingOverlay progress={loadingProgress} />}{" "}
       {/* 로딩 화면 표시 */}
-      <div ref={mountRef} style={{ width: "100vw", height: "100vh" }} />
+      <div
+        ref={mountRef}
+        style={{ width: "100vw", height: "100vh", overflow: "hidden" }}
+      />
     </>
   );
 }

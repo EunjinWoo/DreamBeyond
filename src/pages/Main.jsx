@@ -42,13 +42,18 @@ function Home() {
     const modelLaptopScreen = new THREE.Mesh();
     const mainObjectGroup = new THREE.Group();
 
-    {
-      const axes = new THREE.AxesHelper(150);
-      scene.add(axes);
+    // {
+    //   const axes = new THREE.AxesHelper(150);
+    //   scene.add(axes);
 
-      const gridHelper = new THREE.GridHelper(70, 20);
-      scene.add(gridHelper);
-    }
+    const gridHelper = new THREE.GridHelper(
+      500, // 크기
+      50, // 구획 수
+      0x0000ff, // 중심선 색상 (파란색)
+      0x888888 // 나머지 선 색상 (연회색)
+    );
+    scene.add(gridHelper);
+    // }
 
     scene.fog = new THREE.Fog(0x000000, 10, 1000);
 
@@ -69,25 +74,11 @@ function Home() {
       directional_light_2.position.set(50, 50, 50);
       scene.add(directional_light_2);
 
-      const directionalLightHelper2 = new THREE.DirectionalLightHelper(
-        directional_light_2,
-        5,
-        "#000"
-      );
-      scene.add(directionalLightHelper2);
-
       // directional light 3
       const directional_light_3 = new THREE.DirectionalLight(0xefedff, 0.6);
       directional_light_3.castShadow = true;
       directional_light_3.position.set(50, 50, 50);
       scene.add(directional_light_3);
-
-      const directionalLightHelper3 = new THREE.DirectionalLightHelper(
-        directional_light_3,
-        5,
-        "#000"
-      );
-      scene.add(directionalLightHelper3);
 
       // directional light 4
       const directional_light_4 = new THREE.DirectionalLight(0xefedff, 2);
@@ -95,25 +86,11 @@ function Home() {
       directional_light_4.position.set(-50, 50, -50);
       scene.add(directional_light_4);
 
-      const directionalLightHelper4 = new THREE.DirectionalLightHelper(
-        directional_light_4,
-        5,
-        "#000"
-      );
-      scene.add(directionalLightHelper4);
-
       // directional light 5 - below object
       const directional_light_5 = new THREE.DirectionalLight(0xefedff, 1);
       directional_light_5.castShadow = true;
       directional_light_5.position.set(-50, -50, -50);
       scene.add(directional_light_5);
-
-      const directionalLightHelper5 = new THREE.DirectionalLightHelper(
-        directional_light_5,
-        5,
-        "#000"
-      );
-      scene.add(directionalLightHelper5);
 
       // directional light 6 - to mini clouds
       const directional_light_6 = new THREE.DirectionalLight(0xefedff, 0.6);
@@ -122,13 +99,6 @@ function Home() {
       directional_light_6.target.position.set(-30, 30, 30);
       scene.add(directional_light_6);
       scene.add(directional_light_6.target);
-
-      const directionalLightHelper6 = new THREE.DirectionalLightHelper(
-        directional_light_6,
-        5,
-        "#000"
-      );
-      scene.add(directionalLightHelper6);
     }
 
     // GLTF 모델 로드
@@ -144,14 +114,6 @@ function Home() {
         const laptopScreen =
           gltf.scene.children[1].children[8].children[0].children[0].children[0]
             .children[0].children[0].children[2].children[0].children[4];
-        // console.log("Laptop Model : ", laptop);
-
-        // laptop.traverse((child) => {
-        //   if (child.name === "obRdEiGZsRMTwyW") {
-        //     // laptopScreen.add(child);
-        //     laptopScreen = child;
-        //   }
-        // });
         console.log("Laptop Screen Object:", laptopScreen); // 객체 확인
 
         // 크기 / 위치 조절
@@ -254,7 +216,10 @@ function Home() {
     <>
       {isLoading && <LoadingOverlay progress={loadingProgress} />}{" "}
       {/* 로딩 화면 표시 */}
-      <div ref={mountRef} style={{ width: "100vw", height: "100vh" }} />
+      <div
+        ref={mountRef}
+        style={{ width: "100vw", height: "100vh", overflow: "hidden" }}
+      />
     </>
   );
 }

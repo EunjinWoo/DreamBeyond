@@ -1,0 +1,23 @@
+.scrollable-container {
+  width: 400px; /* 원하는 너비 설정 */
+  height: 300px; /* 원하는 높이 설정 */
+  background-color: #ffffff;
+  overflow-y: auto; /* 스크롤 활성화 */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  position: absolute;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+}
+
+.content-section {
+  margin-bottom: 20px;
+}
+
+.content-section h2 {
+  margin: 0 0 10px;
+}
+
+.content-section p {
+  line-height: 1.5;
+}

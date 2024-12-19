@@ -1,13 +1,16 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-// import DreamBeyondModel from "../assets/dream-beyond-object.glb";
+import { setupCameraInteraction } from "../components/utils/CameraHandler";
+import ScrollablePage from "./ScrollablePage";
 
 function Home() {
   const mountRef = useRef(null);
+
   // 환경 변수에서 Blob URL 가져오기
-  const DreamBeyondModel = process.env.REACT_APP_MODEL_URL;
+  const DreamBeyondModel =
+    "https://dreambeyondbucket.s3.ap-northeast-2.amazonaws.com/dream-beyond-object-portfoliopng.glb";
   const mixers = [];
   let action;
 
@@ -18,8 +21,9 @@ function Home() {
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#000000");
 
+    const initialCameraPosition = [50, 30, 100]; // 초기 카메라 위치
     const camera = new THREE.PerspectiveCamera(70, WIDTH / HEIGHT, 0.1, 2000);
-    camera.position.set(50, 30, 100);
+    camera.position.set(...initialCameraPosition);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(WIDTH, HEIGHT);
@@ -28,10 +32,13 @@ function Home() {
     mountRef.current.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableZoom = false; // 확대/축소 비활성화
 
     const modelCharacter = new THREE.Object3D();
     const modelBackground = new THREE.Object3D();
     const model = new THREE.Object3D();
+    const modelLaptopScreen = new THREE.Mesh();
+    const mainObjectGroup = new THREE.Group();
 
     {
       const axes = new THREE.AxesHelper(150);
@@ -124,6 +131,7 @@ function Home() {
 
     // GLTF 모델 로드
     const gltfloader = new GLTFLoader();
+    let isRotating = true;
 
     gltfloader.load(
       DreamBeyondModel,
@@ -131,26 +139,53 @@ function Home() {
         console.log("Cloud and Character Model : ", gltf.scene.children[1]);
         const background = gltf.scene.children[0];
         const object = gltf.scene.children[1];
+        const laptopScreen =
+          gltf.scene.children[1].children[8].children[0].children[0].children[0]
+            .children[0].children[0].children[2].children[0].children[4];
+        // console.log("Laptop Model : ", laptop);
 
-        //크기 / 위치 조절
+        // laptop.traverse((child) => {
+        //   if (child.name === "obRdEiGZsRMTwyW") {
+        //     // laptopScreen.add(child);
+        //     laptopScreen = child;
+        //   }
+        // });
+        console.log("Laptop Screen Object:", laptopScreen); // 객체 확인
+
+        // 크기 / 위치 조절
         const objectScale = 55;
         object.scale.set(objectScale, objectScale, objectScale);
         object.position.set(7, 7, 0);
+        object.name = "modelCharacter";
 
         const backgroundScale = 13;
         background.scale.set(backgroundScale, backgroundScale, backgroundScale);
         background.position.set(-30, 0, 0);
         background.rotation.set(0, 0, 45);
 
+        const laptopScreenScale = 0.218;
+        laptopScreen.scale.set(
+          laptopScreenScale,
+          laptopScreenScale,
+          laptopScreenScale
+        );
+        laptopScreen.position.set(-13.7, 12.35, 0.6);
+        laptopScreen.rotation.set(0, THREE.MathUtils.degToRad(95), 0);
+        laptopScreen.name = "modelLaptopScreen";
+
         // 그림자 생기도록
         object.recieveShadow = true;
 
         modelCharacter.add(object);
         modelBackground.add(background);
+        modelLaptopScreen.add(laptopScreen);
         console.log("model added :", model);
         model.rotation.set(0, 5, 0);
 
-        scene.add(modelCharacter);
+        mainObjectGroup.add(modelLaptopScreen);
+        mainObjectGroup.add(modelCharacter);
+
+        scene.add(mainObjectGroup);
         scene.add(modelBackground);
       },
       undefined,
@@ -160,12 +195,28 @@ function Home() {
     );
 
     const animate = () => {
-      modelCharacter.rotation.y += 0.0008;
-      modelBackground.rotation.y += 0.0001;
+      if (isRotating) {
+        mainObjectGroup.rotation.y += 0.0008;
+        modelBackground.rotation.y += 0.0001;
+      }
 
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     };
+
+    const cleanupCameraHandler = setupCameraInteraction(
+      camera,
+      scene,
+      renderer,
+      mainObjectGroup,
+      initialCameraPosition,
+      () => {
+        isRotating = false; // 모델 클릭 시 회전 멈춤
+      },
+      () => {
+        isRotating = true; // 모델 외부 클릭 시 회전 재개
+      }
+    );
 
     const handleResize = () => {
       WIDTH = window.innerWidth;
@@ -183,6 +234,7 @@ function Home() {
     return () => {
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("keydown", (event) => {});
+      cleanupCameraHandler();
       mountRef.current.removeChild(renderer.domElement);
     };
   }, []);

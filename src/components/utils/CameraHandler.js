@@ -43,7 +43,7 @@ export function setupCameraInteraction(
     camera.lookAt(currentLookAt);
 
     // 애니메이션 종료
-    if (t >= 1) {
+    if (t >= 1.3) {
       animationActive = false;
     }
   };
@@ -73,6 +73,7 @@ export function setupCameraInteraction(
 
         animationClock.start();
         animationActive = true;
+        hoverZoneActive = true;
 
         isCameraTransformed = true; // 카메라 상태 업데이트
         onModelClick(); // 회전 멈춤
@@ -94,7 +95,10 @@ export function setupCameraInteraction(
         event.clientY <= hoverZone.y + hoverZone.height
       ) {
         console.log("Navigating to URL...");
-        window.location.href = "https://bronze-halibut.squarespace.com/";
+        if (hoverZoneActive) {
+          window.location.href = "https://bronze-halibut.squarespace.com/";
+          hoverZoneActive = false;
+        }
       } else {
         // 변환된 상태에서 아무것도 클릭되지 않으면 원래 위치로 복귀
         startPosition.copy(camera.position);
@@ -106,7 +110,11 @@ export function setupCameraInteraction(
         animationClock.start();
         animationActive = true;
 
+        // 카메라 상태와 Hover 상태를 초기화
         isCameraTransformed = false; // 카메라 상태 초기화
+        hoverZoneActive = false; // Hover 상태 초기화
+        renderer.domElement.style.cursor = "default"; // 커서 모양 복원
+
         onOutsideClick(); // 회전 재개
       }
     }

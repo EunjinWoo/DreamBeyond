@@ -3,10 +3,12 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { setupCameraInteraction } from "../components/utils/CameraHandler";
-import ScrollablePage from "./ScrollablePage";
+import LoadingOverlay from "../components/LoadingOverlay";
 
 function Home() {
   const mountRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
+  const [loadingProgress, setLoadingProgress] = useState(0); // 로딩 퍼센트 추가
 
   // 환경 변수에서 Blob URL 가져오기
   const DreamBeyondModel =
@@ -187,8 +189,17 @@ function Home() {
 
         scene.add(mainObjectGroup);
         scene.add(modelBackground);
+
+        // 모델 로딩 완료 시 로딩 화면 제거
+        setIsLoading(false);
       },
-      undefined,
+      (xhr) => {
+        // onProgress: 로딩 진행 상태 업데이트
+        if (xhr.lengthComputable) {
+          const percentComplete = (xhr.loaded / xhr.total) * 100;
+          setLoadingProgress(Math.round(percentComplete));
+        }
+      },
       function (error) {
         console.error(error);
       }
@@ -239,7 +250,13 @@ function Home() {
     };
   }, []);
 
-  return <div ref={mountRef} style={{ width: "100vw", height: "100vh" }} />;
+  return (
+    <>
+      {isLoading && <LoadingOverlay progress={loadingProgress} />}{" "}
+      {/* 로딩 화면 표시 */}
+      <div ref={mountRef} style={{ width: "100vw", height: "100vh" }} />
+    </>
+  );
 }
 
 export default Home;

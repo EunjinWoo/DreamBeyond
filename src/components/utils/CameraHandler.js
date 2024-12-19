@@ -43,7 +43,7 @@ export function setupCameraInteraction(
     camera.lookAt(currentLookAt);
 
     // 애니메이션 종료
-    if (t >= 1.3) {
+    if (t >= 1) {
       animationActive = false;
     }
   };
